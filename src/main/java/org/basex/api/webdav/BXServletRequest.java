@@ -19,6 +19,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.basex.util.Token;
+import org.basex.util.TokenBuilder;
 
 import com.bradmcevoy.http.AbstractRequest;
 import com.bradmcevoy.http.Auth;
@@ -56,6 +57,8 @@ public class BXServletRequest extends AbstractRequest {
   /** Type contents map. */
   private static final Map<String, ContentType> TYPE_CONTENTS =
       new HashMap<String, ContentType>();
+
+  private TokenBuilder log = new TokenBuilder();
 
   static {
     CONTENT_TYPES.put(ContentType.HTTP, Response.HTTP);
@@ -138,7 +141,16 @@ public class BXServletRequest extends AbstractRequest {
 
   @Override
   public InputStream getInputStream() throws IOException {
-    return req.getInputStream();
+    final InputStream in = req.getInputStream();
+    log.reset();
+    return new InputStream() {
+      @Override
+      public int read() throws IOException {
+        final int v = in.read();
+        log.add((byte) v);
+        return v;
+      }
+    };
   }
 
   @Override
@@ -244,6 +256,10 @@ public class BXServletRequest extends AbstractRequest {
    */
   protected boolean isMultiPart() {
     return ContentType.MULTIPART.equals(getRequestContentType());
+  }
+
+  String getContent() {
+    return log.norm().toString();
   }
 }
 

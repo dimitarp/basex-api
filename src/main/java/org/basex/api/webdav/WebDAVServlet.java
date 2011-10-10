@@ -43,6 +43,10 @@ public class WebDAVServlet implements Servlet {
     final Response response = new BXServletResponse((HttpServletResponse) res);
     try {
       manager.process(request, response);
+      System.err.println("\n\n\n\nREQUEST:\n" + req);
+      System.err.println(((BXServletRequest) request).getContent());
+      System.err.println("\n\n\n\nRESPONSE:\n" + res);
+      System.err.println(((BXServletResponse) response).getContent());
     } finally {
       res.getOutputStream().flush();
       res.flushBuffer();

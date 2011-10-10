@@ -8,6 +8,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
+
+import org.basex.util.TokenBuilder;
+
 import com.bradmcevoy.http.AbstractResponse;
 import com.bradmcevoy.http.Cookie;
 import com.bradmcevoy.http.Response;
@@ -45,6 +48,8 @@ public class BXServletResponse extends AbstractResponse {
   private final Map<String, String> headers = new HashMap<String, String>();
   /** Response status. */
   private Response.Status status;
+
+  private TokenBuilder log = new TokenBuilder();
 
   /**
    * Constructor.
@@ -85,7 +90,15 @@ public class BXServletResponse extends AbstractResponse {
   @Override
   public OutputStream getOutputStream() {
     try {
-      return res.getOutputStream();
+      final OutputStream out = res.getOutputStream();
+      log.reset();
+      return new OutputStream() {
+        @Override
+        public void write(final int b) throws IOException {
+          log.add((byte) b);
+          out.write(b);
+        }
+      };
     } catch(final IOException ex) {
       throw new RuntimeException(ex);
     }
@@ -147,5 +160,9 @@ public class BXServletResponse extends AbstractResponse {
         new javax.servlet.http.Cookie(name, value);
     res.addCookie(c);
     return new BXServletCookie(c);
+  }
+
+  String getContent() {
+    return log.norm().toString();
   }
 }
