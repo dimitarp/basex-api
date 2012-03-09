@@ -16,7 +16,7 @@ import org.basex.util.*;
  * @author BaseX Team 2005-12, BSD License
  * @author Christian Gruen
  */
-public final class RESTServlet extends HttpServlet {
+public final class RESTServlet extends BaseXHTTPServlet {
   @Override
   protected void service(final HttpServletRequest req, final HttpServletResponse res)
       throws IOException, ServletException {

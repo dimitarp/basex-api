@@ -20,7 +20,7 @@ import org.basex.util.*;
  */
 public final class HTTPSession {
   /** Database context. */
-  private static final Context CONTEXT = new Context();
+  private static Context context;
   /** User name. */
   private String user;
   /** Password. */
@@ -75,8 +75,8 @@ public final class HTTPSession {
   public Session login() throws IOException {
     if(user == null || pass == null) throw new LoginException(NOPASSWD);
     return CLIENT.equals(System.getProperty(DBMODE)) ?
-        new ClientSession(CONTEXT, user, pass) :
-        new LocalSession(CONTEXT, user, pass);
+        new ClientSession(context(), user, pass) :
+        new LocalSession(context(), user, pass);
   }
 
   /**
@@ -84,7 +84,10 @@ public final class HTTPSession {
    * @return database context
    */
   public static Context context() {
-    return CONTEXT;
+    synchronized(Context.class) {
+      if(context == null) context = new Context();
+    }
+    return context;
   }
 
   /**

@@ -4,6 +4,8 @@ import java.io.*;
 
 import javax.servlet.http.*;
 
+import org.basex.api.*;
+
 import com.bradmcevoy.http.*;
 
 /**
@@ -12,7 +14,7 @@ import com.bradmcevoy.http.*;
  * @author BaseX Team 2005-12, BSD License
  * @author Dimitar Popov
  */
-public class WebDAVServlet extends HttpServlet {
+public class WebDAVServlet extends BaseXHTTPServlet {
   @Override
   public void service(final HttpServletRequest req, final HttpServletResponse res)
       throws IOException {

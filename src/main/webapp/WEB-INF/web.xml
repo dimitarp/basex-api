@@ -5,6 +5,17 @@
 
   <display-name>BaseX HTTP Server</display-name>
   <description>BaseX HTTP Server</description>
+<!--
+  <context-param>
+    <param-name>basexhome</param-name>
+    <param-value>/var/run/basex</param-value>
+  </context-param>
+
+  <context-param>
+    <param-name>basexhttp</param-name>
+    <param-value>/var/run/basex/http</param-value>
+  </context-param>
+-->
   <servlet>
     <servlet-name>WebDAV</servlet-name>
     <servlet-class>org.basex.api.webdav.WebDAVServlet</servlet-class>
