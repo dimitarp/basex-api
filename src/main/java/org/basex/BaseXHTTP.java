@@ -175,11 +175,11 @@ public final class BaseXHTTP {
 
     if(rest) {
       jctx.addServlet(RESTServlet.class, "/rest/*");
-      //jctx.addFilter(GzipFilter.class, "/rest/*", Handler.ALL);
+      jctx.addFilter(GzipFilter.class, "/rest/*", Handler.ALL);
     }
     if(restxq) {
       jctx.addServlet(RestXqServlet.class, "/restxq/*");
-      //jctx.addFilter(GzipFilter.class, "/restxq/*", Handler.ALL);
+      jctx.addFilter(GzipFilter.class, "/restxq/*", Handler.ALL);
     }
     if(webdav) {
       jctx.addServlet(WebDAVServlet.class, "/webdav/*");
