@@ -34,19 +34,19 @@ public abstract class BaseXServlet extends HttpServlet {
       run(http);
     } catch(final HTTPException ex) {
       Util.debug(ex);
-      http.status(ex.getStatus(), ex.getMessage());
+      http.sendError(ex.getStatus(), ex.getMessage());
     } catch(final LoginException ex) {
       Util.debug(ex);
-      http.status(SC_UNAUTHORIZED, ex.getMessage());
+      http.sendError(SC_UNAUTHORIZED, ex.getMessage());
     } catch(final IOException ex) {
       Util.debug(ex);
-      http.status(SC_BAD_REQUEST, Util.message(ex));
+      http.sendError(SC_BAD_REQUEST, Util.message(ex));
     } catch(final QueryException ex) {
       Util.debug(ex);
-      http.status(SC_BAD_REQUEST, ex.getMessage());
+      http.sendError(SC_BAD_REQUEST, ex.getMessage());
     } catch(final Exception ex) {
       Util.errln(Util.bug(ex));
-      http.status(SC_INTERNAL_SERVER_ERROR, Util.info(UNEXPECTED, ex));
+      http.sendError(SC_INTERNAL_SERVER_ERROR, Util.info(UNEXPECTED, ex));
     } finally {
       if(Boolean.parseBoolean(System.getProperty(HTTPText.DBVERBOSE))) {
         Util.out("_ REQUEST ___________________________________" + Prop.NL + req);

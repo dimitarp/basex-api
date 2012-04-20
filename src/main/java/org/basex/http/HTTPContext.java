@@ -212,6 +212,18 @@ public final class HTTPContext {
   }
 
   /**
+   * Sets a status and sends an info message.
+   * @param code status code
+   * @param message info message
+   * @throws IOException I/O exception
+   */
+  public void sendError(final int code, final String message) throws IOException {
+    if(code == SC_UNAUTHORIZED) res.setHeader(WWW_AUTHENTICATE, BASIC);
+    if(message == null) res.sendError(code);
+    else res.sendError(code, message);
+  }
+
+  /**
    * Updates the credentials.
    * @param u user
    * @param p password
