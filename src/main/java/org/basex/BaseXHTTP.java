@@ -6,6 +6,8 @@ import static org.basex.http.HTTPText.*;
 import java.io.*;
 import java.net.*;
 
+import javax.servlet.http.*;
+
 import org.basex.core.*;
 import org.basex.http.*;
 import org.basex.http.rest.*;
@@ -15,6 +17,8 @@ import org.basex.util.*;
 import org.mortbay.jetty.*;
 import org.mortbay.jetty.handler.*;
 import org.mortbay.jetty.nio.*;
+import org.mortbay.servlet.*;
+import org.mortbay.util.*;
 
 /**
  * This is the main class for the starting the database HTTP services.
@@ -128,6 +132,46 @@ public final class BaseXHTTP {
     final org.mortbay.jetty.servlet.Context jctx =
         new org.mortbay.jetty.servlet.Context(jetty, "/",
             org.mortbay.jetty.servlet.Context.SESSIONS);
+
+    jctx.setErrorHandler(new ErrorHandler() {
+      @Override
+      public void handle(final String target, final HttpServletRequest request,
+          final HttpServletResponse response, final int dispatch) throws IOException {
+        // this method is copy-paste from the overridden method; normally it shouldn't be
+        // overridden, but Jetty 6 does not provide means to set the content type of the
+        // error page.
+        HttpConnection connection = HttpConnection.getCurrentConnection();
+
+        connection.getRequest().setHandled(true);
+
+        String method = request.getMethod();
+
+        if(!method.equals(HttpMethods.GET) &&
+           !method.equals(HttpMethods.POST) &&
+           !method.equals(HttpMethods.HEAD)) return;
+
+        response.setContentType(MimeTypes.TEXT_PLAIN_8859_1);
+
+        if (getCacheControl() != null)
+          response.setHeader(HttpHeaders.CACHE_CONTROL, getCacheControl());
+
+        ByteArrayISO8859Writer writer = new ByteArrayISO8859Writer(4096);
+        Response res = connection.getResponse();
+        handleErrorPage(request, writer, res.getStatus(), res.getReason());
+
+        writer.flush();
+        response.setContentLength(writer.size());
+        writer.writeTo(response.getOutputStream());
+        writer.destroy();
+      }
+
+      @Override
+      protected void writeErrorPage(final HttpServletRequest request, final Writer writer,
+          final int code, final String message, final boolean showStacks)
+          throws IOException {
+        if(message != null) writer.write(message);
+      }
+    });
 
     if(rest) {
       jctx.addServlet(RESTServlet.class, "/rest/*");
